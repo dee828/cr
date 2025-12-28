@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: Gateway
+
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+              - "http://localhost:6173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+      routes:
+        - id: demo
+          predicates:
+            - Path=/demo/**
+          filters:
+            - StripPrefix=1
+          uri: http://localhost:8070
+        - id: user
+          predicates:
+            - Path=/user/**
+          filters:
+            - StripPrefix=1
+          uri: http://localhost:8080
+        - id: business
+          predicates:
+            - Path=/business/**
+          filters:
+            - StripPrefix=1
+          uri: http://localhost:8081
+        - id: scheduler
+          predicates:
+            - Path=/scheduler/**
+          filters:
+            - StripPrefix=1
+          uri: http://localhost:8082
+
+auth:
+  jwt:
+    secret-key: "这是一串密钥,正常应该长一点，至少几十个字符，不能泄露，不能提交到代码仓库，在-dev配置文件覆盖这个值"
