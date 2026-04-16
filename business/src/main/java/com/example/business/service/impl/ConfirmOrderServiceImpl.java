@@ -2,6 +2,7 @@ package com.example.business.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
+import com.example.business.enums.ConfirmOrderStatus;
 import com.example.common.core.UserContext;
 import com.example.common.exception.CustomForbiddenException;
 import cn.hutool.core.bean.BeanUtil;
@@ -180,7 +181,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         confirmOrder.setStart(request.getStart());
         confirmOrder.setEnd(request.getEnd());
         confirmOrder.setDailyTrainTicketId(request.getDailyTrainTicketId());
-        confirmOrder.setStatus("I");
+        confirmOrder.setStatus(ConfirmOrderStatus.INIT.getCode());
         confirmOrder.setTickets(JSONUtil.toJsonStr(request.getTickets()));
         this.save(confirmOrder);
 
