@@ -269,6 +269,10 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         } else {
             // 没有主动选座
             log.info("本次用户购票【无】主动选座");
+            // 挑座位 - 随机
+            for (ConfirmOrderTicketRequest ticket : request.getTickets()) {
+                getSeat(finalSeatList, date, trainCode, ticket.getSeatTypeCode(), null, null, dailyTrainTicket.getStartIndex(), dailyTrainTicket.getEndIndex());
+            }
         }
         log.info("最终的选座结果={}", finalSeatList);
 
