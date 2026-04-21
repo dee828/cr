@@ -60,6 +60,9 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
     @Autowired
     DailyTrainSeatService dailyTrainSeatService;
 
+    @Autowired
+    AfterConfirmOrderService afterConfirmOrderService;
+
     @Override
     @Transactional
     public boolean saveOrUpdate(ConfirmOrderRequest request) {
@@ -277,10 +280,11 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         log.info("最终的选座结果={}", finalSeatList);
 
         // 选中座位后的事务处理：
-        // 座位表修改售卖情况 sell 字段
-        // 真实扣减库存，更新【余票信息】的余票
-        // 记录会员的购票记录
-        // 更新【确认订单】表的订单状态=成功
+        //     更新座位表的新售卖情况 sell 字段值
+        //     真实扣减库存，更新【余票信息】表的对应余票字段值
+        //     保存到【车票记录】表
+        //     更新【确认订单】表的订单状态=成功
+        afterConfirmOrderService.afterConfirm(finalSeatList);
     }
 
     /**
