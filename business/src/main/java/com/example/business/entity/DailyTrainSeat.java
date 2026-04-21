@@ -3,12 +3,14 @@ package com.example.business.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
 @Setter
 @Getter
+@ToString
 public class DailyTrainSeat extends BaseEntity {
     /**
      * 日期
