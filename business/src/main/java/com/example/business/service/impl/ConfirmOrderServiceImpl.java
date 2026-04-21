@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.example.business.entity.DailyTrainTicket;
 import com.example.business.enums.ConfirmOrderStatus;
+import com.example.business.enums.SeatCol;
 import com.example.business.enums.SeatType;
 import com.example.common.exception.CustomBusinessException;
 import com.example.business.request.ConfirmOrderTicketRequest;
@@ -34,6 +35,7 @@ import org.springframework.util.StringUtils;
 import com.example.common.exception.CustomValidationException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import java.util.List;
@@ -220,6 +222,34 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         if (StrUtil.isNotBlank(firstTicketRequest.getSeat())) {
             // 有主动选座
             log.info("本次用户购票【有】主动选座");
+
+            // 辅助：计算座位的相对偏移值，提高多个座位的选座效率
+            // 查出用户所选座位类型（总共包含哪些列）比如: 二等座 - A B C D F
+            String seatTypeCode = firstTicketRequest.getSeatTypeCode();
+            List<SeatCol> colEnumList = SeatCol.getColsByType(seatTypeCode);
+            log.info("本次选座的座位类型={}，包含的列={}", SeatType.getEnumByCode(seatTypeCode), colEnumList);
+            // 组成和前端一样的两排初始座位列表，用作参照的两排座位
+            List<String> referSeatList = new ArrayList<>();
+            for (int i = 1; i <= 2; i++) {
+                for (SeatCol seatCol : colEnumList) {
+                    referSeatList.add(seatCol.getCode() + i);
+                }
+            }
+            log.info("用作参照的两排座位={}", referSeatList);
+            // 绝对偏移值
+            List<Integer> aboluteOffsetList = new ArrayList<>();
+            List<Integer> offsetList = new ArrayList<>();
+            for (ConfirmOrderTicketRequest ticketReq : request.getTickets()) {
+                int index = referSeatList.indexOf(ticketReq.getSeat());
+                aboluteOffsetList.add(index);
+            }
+            log.info("计算得到所选座位的绝对偏移值={}", aboluteOffsetList);
+            // 真正需要的偏移值（相对于第一个座位的偏移值）
+            for (Integer index : aboluteOffsetList) {
+                int offset = index - aboluteOffsetList.get(0);
+                offsetList.add(offset);
+            }
+            log.info("计算得到所选座位相对第一个座位的偏移值={}", offsetList);
         } else {
             // 没有主动选座
             log.info("本次用户购票【无】主动选座");
