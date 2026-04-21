@@ -189,6 +189,11 @@ const menuConfig = [
     icon: Avatar
   },
   {
+    path: '/job',
+    title: '定时任务管理',
+    icon: Timer
+  },
+  {
     title: '基础数据',
     icon: Files,
     children: [
@@ -257,11 +262,6 @@ const menuConfig = [
         path: '/confirm-order',
         title: '确认订单',
         icon: Tickets
-      },
-      {
-        path: '/job',
-        title: '定时任务管理',
-        icon: Timer
       }
     ]
   }
