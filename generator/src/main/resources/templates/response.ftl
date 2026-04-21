@@ -28,7 +28,7 @@ public class ${Domain}Response {
 
 <#list fieldList as field>
   <#if !ignoreColumns?seq_contains(field.name)>
-    <#if field.name == 'id'>
+    <#if field.name == 'id' || (field.name?ends_with('_id') && field.javaType == 'Long')>
     @JsonSerialize(using = ToStringSerializer.class)
     </#if>
     <#if field.javaType=='LocalTime'>
