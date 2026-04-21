@@ -7,6 +7,7 @@ import com.example.common.response.PageResponse;
 import com.example.business.response.DailyTrainCarriageResponse;
 import com.example.business.request.DailyTrainCarriageRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DailyTrainCarriageService extends IService<DailyTrainCarriage> {
@@ -52,4 +53,6 @@ public interface DailyTrainCarriageService extends IService<DailyTrainCarriage> 
      * 【管理员】批量逻辑删除每日火车车厢 (无需所有权检查)
      */
     boolean adminDeleteBatch(List<Long> ids);
+
+    List<DailyTrainCarriage> selectBySeatType(LocalDate date, String trainCode, String seatType);
 }

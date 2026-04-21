@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.example.common.exception.CustomValidationException;
+
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 import java.util.List;
@@ -94,6 +96,15 @@ public class DailyTrainCarriageServiceImpl extends ServiceImpl<DailyTrainCarriag
         }
         // 批量删除，MyBatis-Plus 的 removeByIds 会自动处理逻辑删除
         return this.removeByIds(ids);
+    }
+
+    @Override
+    public List<DailyTrainCarriage> selectBySeatType(LocalDate date, String trainCode, String seatType) {
+        LambdaQueryWrapper<DailyTrainCarriage> qw = new LambdaQueryWrapper<>();
+        qw.eq(DailyTrainCarriage::getDate, date);
+        qw.eq(DailyTrainCarriage::getTrainCode, trainCode);
+        qw.eq(DailyTrainCarriage::getSeatType, seatType);
+        return this.list(qw);
     }
 
     // ==================== 逻辑抽取辅助方法 ====================

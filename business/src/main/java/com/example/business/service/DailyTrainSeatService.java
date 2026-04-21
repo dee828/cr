@@ -55,4 +55,6 @@ public interface DailyTrainSeatService extends IService<DailyTrainSeat> {
     boolean adminDeleteBatch(List<Long> ids);
 
     int countSeat(LocalDate date, String code, String seatType);
+
+    List<DailyTrainSeat> selectByCarriage(LocalDate date, String trainCode, Integer trainCarriageIndex);
 }
