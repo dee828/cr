@@ -7,6 +7,7 @@ import com.example.common.response.PageResponse;
 import com.example.business.response.DailyTrainTicketResponse;
 import com.example.business.request.DailyTrainTicketRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DailyTrainTicketService extends IService<DailyTrainTicket> {
@@ -52,4 +53,6 @@ public interface DailyTrainTicketService extends IService<DailyTrainTicket> {
      * 【管理员】批量逻辑删除余票信息 (无需所有权检查)
      */
     boolean adminDeleteBatch(List<Long> ids);
+
+    DailyTrainTicket selectByUnique(LocalDate date, String trainCode, String start, String end);
 }

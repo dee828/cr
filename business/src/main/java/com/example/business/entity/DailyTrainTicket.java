@@ -3,6 +3,7 @@ package com.example.business.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 
 @Setter
 @Getter
+@ToString
 public class DailyTrainTicket extends BaseEntity {
     /**
      * 日期

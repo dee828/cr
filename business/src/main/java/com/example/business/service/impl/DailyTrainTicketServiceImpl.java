@@ -2,6 +2,7 @@ package com.example.business.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 //import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +20,7 @@ import com.example.common.exception.CustomValidationException;
 import java.util.NoSuchElementException;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -94,6 +96,22 @@ public class DailyTrainTicketServiceImpl extends ServiceImpl<DailyTrainTicketMap
         }
         // 批量删除，MyBatis-Plus 的 removeByIds 会自动处理逻辑删除
         return this.removeByIds(ids);
+    }
+
+    @Override
+    public DailyTrainTicket selectByUnique(LocalDate date, String trainCode, String start, String end) {
+        LambdaQueryWrapper<DailyTrainTicket> qw = new LambdaQueryWrapper<>();
+        qw.eq(DailyTrainTicket::getDate, date);
+        qw.eq(DailyTrainTicket::getTrainCode, trainCode);
+        qw.eq(DailyTrainTicket::getStart, start);
+        qw.eq(DailyTrainTicket::getEnd, end);
+
+        List<DailyTrainTicket> dailyTrainTickets = this.list(qw);
+        if (CollUtil.isNotEmpty(dailyTrainTickets)){
+            return dailyTrainTickets.get(0);
+        } else {
+            return null;
+        }
     }
 
     // ==================== 逻辑抽取辅助方法 ====================

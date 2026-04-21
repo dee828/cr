@@ -2,7 +2,9 @@ package com.example.business.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
+import com.example.business.entity.DailyTrainTicket;
 import com.example.business.enums.ConfirmOrderStatus;
+import com.example.business.service.DailyTrainTicketService;
 import com.example.common.core.UserContext;
 import com.example.common.exception.CustomForbiddenException;
 import cn.hutool.core.bean.BeanUtil;
@@ -18,10 +20,13 @@ import com.example.common.response.PageResponse;
 import com.example.business.response.ConfirmOrderResponse;
 import com.example.business.service.ConfirmOrderService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.example.common.exception.CustomValidationException;
+
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 
 import java.util.List;
@@ -29,6 +34,9 @@ import java.time.LocalDateTime;
 
 @Service
 public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, ConfirmOrder> implements ConfirmOrderService {
+    @Autowired
+    DailyTrainTicketService dailyTrainTicketService;
+
     @Override
     @Transactional
     public boolean saveOrUpdate(ConfirmOrderRequest request) {
@@ -172,20 +180,26 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         System.out.println(request);
         // 额外的业务数据校验【暂略】如：车次是否存在；同乘客同车次的票是否已经买过了；等等...；当前先聚焦以下核心功能
 
+        LocalDate date = request.getDate();
+        String trainCode = request.getTrainCode();
+        String start = request.getStart();
+        String end = request.getEnd();
         // 保存到【确认订单】表，订单状态赋初始值
         ConfirmOrder confirmOrder = new ConfirmOrder();
         confirmOrder.setId(IdUtil.getSnowflakeNextId());
         confirmOrder.setUserId(UserContext.get());
-        confirmOrder.setDate(request.getDate());
-        confirmOrder.setTrainCode(request.getTrainCode());
-        confirmOrder.setStart(request.getStart());
-        confirmOrder.setEnd(request.getEnd());
+        confirmOrder.setDate(date);
+        confirmOrder.setTrainCode(trainCode);
+        confirmOrder.setStart(start);
+        confirmOrder.setEnd(end);
         confirmOrder.setDailyTrainTicketId(request.getDailyTrainTicketId());
         confirmOrder.setStatus(ConfirmOrderStatus.INIT.getCode());
         confirmOrder.setTickets(JSONUtil.toJsonStr(request.getTickets()));
         this.save(confirmOrder);
 
-        // 查询【余票信息】获取真实的库存
+        // 查询实时【余票信息】（用户在前端界面看到有票，等到真正下单时有可能被抢完了）
+        DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
+        System.out.println(dailyTrainTicket);
 
         // 预扣减余票数量，并判断余票是否足够
 
