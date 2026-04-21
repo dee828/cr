@@ -16,6 +16,7 @@ public class ConfirmOrderResponse {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
@@ -27,6 +28,7 @@ public class ConfirmOrderResponse {
 
     private String end;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long dailyTrainTicketId;
 
     private String tickets;
