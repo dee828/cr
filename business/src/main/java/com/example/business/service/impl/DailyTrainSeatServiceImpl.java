@@ -112,6 +112,7 @@ public class DailyTrainSeatServiceImpl extends ServiceImpl<DailyTrainSeatMapper,
         }
 
         qw.orderByDesc(DailyTrainSeat::getCreatedAt);
+        qw.orderByAsc(DailyTrainSeat::getId);
         return qw;
     }
 
