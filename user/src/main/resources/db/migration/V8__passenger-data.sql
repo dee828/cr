@@ -1,0 +1,3 @@
+-- 乘车人基础数据
+INSERT INTO passenger (id, user_id, name, id_card, mobile, type, created_at, created_by, updated_at, updated_by, deleted, deleted_at, deleted_by) VALUES (2046553456833548290, 178, '张三', '181234567891234567', '13123456789', '1', now(), 178, null, null, 0, null, null);
+INSERT INTO passenger (id, user_id, name, id_card, mobile, type, created_at, created_by, updated_at, updated_by, deleted, deleted_at, deleted_by) VALUES (2046553608772210689, 178, '李四', '191234567891234567', '13987654321', '3', now(), 178, null, null, 0, null, null);
