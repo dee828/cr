@@ -1,5 +1,6 @@
 package com.example.common.advice;
 
+import com.example.common.exception.CustomException;
 import com.example.common.exception.CustomForbiddenException;
 import com.example.common.exception.CustomUnauthorizedException;
 import com.example.common.exception.CustomValidationException;
@@ -61,5 +62,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public R<Object> customForbiddenExceptionHandler(CustomForbiddenException e) {
         return R.failValid(e.getMessage());
+    }
+
+    /**
+     * 捕捉到 CustomException 自定义异常的统一处理
+     * 这是自定义类型异常的兜底操作，建议针对明确的异常类型做特定处理，方便返回更合适的状态码和消息
+     * @param e 异常
+     * @return R 统一返回结果
+     */
+    @ExceptionHandler(value = CustomException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public R<Object> customExceptionHandler(Exception e) {
+        return R.fail(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }

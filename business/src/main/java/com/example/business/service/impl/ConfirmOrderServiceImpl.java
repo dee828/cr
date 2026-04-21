@@ -1,9 +1,13 @@
 package com.example.business.service.impl;
 
+import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.example.business.entity.DailyTrainTicket;
 import com.example.business.enums.ConfirmOrderStatus;
+import com.example.business.enums.SeatType;
+import com.example.common.exception.CustomBusinessException;
+import com.example.business.request.ConfirmOrderTicketRequest;
 import com.example.business.service.DailyTrainTicketService;
 import com.example.common.core.UserContext;
 import com.example.common.exception.CustomForbiddenException;
@@ -20,6 +24,8 @@ import com.example.common.response.PageResponse;
 import com.example.business.response.ConfirmOrderResponse;
 import com.example.business.service.ConfirmOrderService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +40,8 @@ import java.time.LocalDateTime;
 
 @Service
 public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, ConfirmOrder> implements ConfirmOrderService {
+    private static final Logger log = LoggerFactory.getLogger(ConfirmOrderServiceImpl.class);
+
     @Autowired
     DailyTrainTicketService dailyTrainTicketService;
 
@@ -199,9 +207,11 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
 
         // 查询实时【余票信息】（用户在前端界面看到有票，等到真正下单时有可能被抢完了）
         DailyTrainTicket dailyTrainTicket = dailyTrainTicketService.selectByUnique(date, trainCode, start, end);
-        System.out.println(dailyTrainTicket);
+        log.debug("预扣减余票之前：{}", dailyTrainTicket);
 
         // 预扣减余票数量，并判断余票是否足够
+        preReduceTicketCount(request, dailyTrainTicket);
+        log.debug("预扣减余票之后：{}", dailyTrainTicket);
 
         // 选座
         // 遍历车厢，获取每个车厢的座位数据
@@ -212,5 +222,31 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         // 真实扣减库存，更新【余票信息】的余票
         // 记录会员的购票记录
         // 更新【确认订单】表的订单状态=成功
+    }
+
+    private void preReduceTicketCount(ConfirmOrderRequest request, DailyTrainTicket dailyTrainTicket) {
+        // 从用户请求中获取用户要购买的票数
+        List<ConfirmOrderTicketRequest> tickets = request.getTickets();
+        // 循环操作
+        for (ConfirmOrderTicketRequest ticketRequest : tickets) {
+            String seatTypeCode = ticketRequest.getSeatTypeCode();
+            SeatType seatType = EnumUtil.getBy(SeatType::getCode, seatTypeCode);
+            switch(seatType){
+                case YDZ -> {
+                    int countAfterReduce = dailyTrainTicket.getYdz() - 1;
+                    if (countAfterReduce < 0){
+                        throw new CustomBusinessException("余票不足");
+                    }
+                    dailyTrainTicket.setYdz(countAfterReduce);
+                }
+                case EDZ -> {
+                    int countAfterReduce = dailyTrainTicket.getEdz() - 1;
+                    if (countAfterReduce < 0){
+                        throw new CustomBusinessException("余票不足");
+                    }
+                    dailyTrainTicket.setEdz(countAfterReduce);
+                }
+            }
+        }
     }
 }
