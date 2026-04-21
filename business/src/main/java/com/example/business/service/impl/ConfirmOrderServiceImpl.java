@@ -2,6 +2,7 @@ package com.example.business.service.impl;
 
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.example.business.entity.DailyTrainCarriage;
@@ -333,7 +334,24 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
             return false;
         } else {
             log.info("座位={}在本次车站区间={}~{}未出售，可选", dailyTrainSeat.getCarriageSeatIndex(), startIndex, endIndex);
-            // 买完后要改变 dailyTrainSeat.setSell(xxx)
+            //  111,   111
+            String curSell = sellPart.replace('0', '1');
+            // 0111,  0111
+            curSell = StrUtil.fillBefore(curSell, '0', endIndex);
+            // 01110, 01110
+            curSell = StrUtil.fillAfter(curSell, '0', sell.length());
+
+            // 当前区间售票信息 curSell=01110 与数据库中已售信息 sell=00001 按位或，即可得到该座位卖出此票后的新售票详情
+            // 15(01111), 14(01110 = 01110|00000)
+            int newSellInt = NumberUtil.binaryToInt(curSell) | NumberUtil.binaryToInt(sell);
+            //  1111,  1110
+            String newSell = NumberUtil.getBinaryStr(newSellInt);
+            // 01111, 01110
+            newSell = StrUtil.fillBefore(newSell, '0', sell.length());
+            log.info("座位={}被选中，原sell={}，车站区间={}~{}，即：{}，本次购票完成之后的新sell={}"
+                    , dailyTrainSeat.getCarriageSeatIndex(), sell, startIndex, endIndex, curSell, newSell);
+            // 更新 sell 值（修改了内存中 dailyTrainSeat 对象的 sell 值；还未更新到数据库）
+            dailyTrainSeat.setSell(newSell);
             return true;
         }
     }
