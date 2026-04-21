@@ -13,7 +13,7 @@ const userStore = useUserStore()
 
 // 登录表单数据
 const loginForm = reactive({
-  email: 'user@example.com',
+  email: 'user1@example.com',
   password: ''
 })
 
