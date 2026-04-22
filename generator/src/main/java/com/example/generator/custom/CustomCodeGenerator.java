@@ -19,7 +19,7 @@ public class CustomCodeGenerator {
     static boolean readOnly = false;
 
     public static void main(String[] args) throws Exception {
-        String module = "business";
+        String module = "user";
         System.out.println("module=" + module);
 
         // 构造出真正要生成的目标位置
@@ -28,7 +28,7 @@ public class CustomCodeGenerator {
         System.out.println("basePath: " + basePath);
 
         // 表名、对应实体类名
-        String tableName = "confirm_order";
+        String tableName = "ticket";
         // 首字母大写的实体类名（自动转化【注意多个单词的表名形式和表前缀等场景】）
         String Domain = StrUtil.upperFirst(StrUtil.toCamelCase(tableName));
         System.out.println("表名：" + tableName +"，对应的实体名："+ Domain);

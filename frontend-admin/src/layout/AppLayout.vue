@@ -140,7 +140,8 @@ import {
   Ticket,
   Calendar,
   Timer,
-  Tickets
+  Tickets,
+  Money
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -187,6 +188,11 @@ const menuConfig = [
     path: '/passenger',
     title: '乘车人',
     icon: Avatar
+  },
+  {
+    path: '/ticket',
+    title: '车票记录',
+    icon: Money
   },
   {
     path: '/job',

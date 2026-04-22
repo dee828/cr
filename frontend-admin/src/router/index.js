@@ -105,6 +105,12 @@ const routes = [
         name: 'ConfirmOrder',
         component: () => import('@/views/business/ConfirmOrder.vue'),
         meta: { title: '确认订单' }
+      },
+      {
+        path: 'ticket',
+        name: 'Ticket',
+        component: () => import('@/views/user/Ticket.vue'),
+        meta: { title: '车票记录' }
       }
     ]
   }
