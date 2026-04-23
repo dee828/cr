@@ -19,10 +19,10 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
-    @Operation(summary = "新增/修改车票记录")
-    @PostMapping("/save")
-    public R<Boolean> save(@RequestBody @Valid TicketRequest request) {
-        return R.ok(ticketService.saveOrUpdate(request));
+    @Operation(summary = "新增车票记录")
+    @PostMapping("/saveByFeign")
+    public R<Boolean> saveByFeign(@RequestBody @Valid TicketRequest request) {
+        return R.ok(ticketService.save(request));
     }
 
     @Operation(summary = "我的车票记录")
