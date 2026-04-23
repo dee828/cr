@@ -202,7 +202,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 .orElseThrow(() -> new NoSuchElementException("确认订单不存在"));
     }
 
-    public void confirm(@Valid ConfirmOrderRequest request) {
+    public synchronized void confirm(@Valid ConfirmOrderRequest request) {
         System.out.println(request);
         // 额外的业务数据校验【暂略】如：车次是否存在；同乘客同车次的票是否已经买过了；等等...；当前先聚焦以下核心功能
 
