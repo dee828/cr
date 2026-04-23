@@ -284,7 +284,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         //     真实扣减库存，更新【余票信息】表的对应余票字段值
         //     保存到【车票记录】表
         //     更新【确认订单】表的订单状态=成功
-        afterConfirmOrderService.afterConfirm(finalSeatList, dailyTrainTicket, request.getTickets());
+        afterConfirmOrderService.afterConfirm(finalSeatList, dailyTrainTicket, request.getTickets(), confirmOrder);
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.example.business.service.impl;
 
+import com.example.business.entity.ConfirmOrder;
 import com.example.business.entity.DailyTrainSeat;
 import com.example.business.entity.DailyTrainTicket;
+import com.example.business.enums.ConfirmOrderStatus;
 import com.example.business.feign.UserFeign;
+import com.example.business.mapper.ConfirmOrderMapper;
 import com.example.business.mapper.DailyTrainSeatMapper;
 import com.example.business.mapper.custom.DailyTrainTicketMapperCustom;
 import com.example.business.request.ConfirmOrderTicketRequest;
@@ -31,6 +34,9 @@ public class AfterConfirmOrderService {
     @Resource
     private UserFeign userFeign;
 
+    @Resource
+    private ConfirmOrderMapper confirmOrderMapper;
+
     /**
      * 选中座位后的事务处理：
      *     更新座位表的新售卖情况 sell 字段值
@@ -39,7 +45,7 @@ public class AfterConfirmOrderService {
      *     更新【确认订单】表的订单状态=成功
      */
     @Transactional
-    public void afterConfirm(List<DailyTrainSeat> finalSeatList, DailyTrainTicket dailyTrainTicket, List<ConfirmOrderTicketRequest> tickets){
+    public void afterConfirm(List<DailyTrainSeat> finalSeatList, DailyTrainTicket dailyTrainTicket, List<ConfirmOrderTicketRequest> tickets, ConfirmOrder confirmOrder){
         for (int j = 0; j < finalSeatList.size(); j++) {
             DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
             DailyTrainSeat seatForUpdate = new DailyTrainSeat();
@@ -100,6 +106,13 @@ public class AfterConfirmOrderService {
             userTicketRequest.setSeatType(dailyTrainSeat.getSeatType());
             R<Boolean> responseFromUserModule = userFeign.saveByFeign(userTicketRequest);
             log.info("跨服务调用 user 模块 saveByFeign 接口，返回={} - 完成", responseFromUserModule);
+
+            // 更新【确认订单】表的订单状态=成功
+            ConfirmOrder confirmOrderForUpdate = new ConfirmOrder();
+            confirmOrderForUpdate.setId(confirmOrder.getId());
+            confirmOrderForUpdate.setStatus(ConfirmOrderStatus.SUCCESS.getCode());
+            confirmOrderMapper.updateById(confirmOrderForUpdate);
+            log.info("更新【确认订单】表的订单状态=成功 - 完成");
         }
     }
 }
