@@ -45,6 +45,12 @@ const routes = [
         name: 'Confirm',
         component: () => import('../views/business/Confirm.vue'),
         meta: { title: '确认订单' }
+      },
+      {
+        path: 'ticket',
+        name: 'Ticket',
+        component: () => import('@/views/user/Ticket.vue'),
+        meta: { title: '车票记录' }
       }
     ]
   }

@@ -133,7 +133,8 @@ import {
   Expand,
   ArrowDown,
   Avatar,
-  Ticket
+  Ticket,
+  Money
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -185,6 +186,11 @@ const menuConfig = [
     path: '/daily-train-ticket',
     title: '余票信息',
     icon: Ticket
+  },
+  {
+    path: '/ticket',
+    title: '车票记录',
+    icon: Money
   },
   {
     title: '多级菜单',

@@ -13,7 +13,7 @@ import java.util.*;
 
 public class CustomCodeGenerator {
     static String basePath = "[module]/src/main/java/com/example/[module]/";
-    static String frontendType = "frontend-admin";
+    static String frontendType = "frontend";
     static String apiJsPath = frontendType + "/src/api/[module]/";
     static String vuePath = frontendType + "/src/views/[module]/";
     static boolean readOnly = true;
