@@ -2,8 +2,13 @@ package com.example.business.service.impl;
 
 import com.example.business.entity.DailyTrainSeat;
 import com.example.business.entity.DailyTrainTicket;
+import com.example.business.feign.UserFeign;
 import com.example.business.mapper.DailyTrainSeatMapper;
 import com.example.business.mapper.custom.DailyTrainTicketMapperCustom;
+import com.example.business.request.ConfirmOrderTicketRequest;
+import com.example.common.core.UserContext;
+import com.example.common.request.TicketRequest;
+import com.example.common.response.R;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +28,9 @@ public class AfterConfirmOrderService {
     @Autowired
     DailyTrainTicketMapperCustom dailyTrainTicketMapperCustom;
 
+    @Resource
+    private UserFeign userFeign;
+
     /**
      * 选中座位后的事务处理：
      *     更新座位表的新售卖情况 sell 字段值
@@ -31,8 +39,9 @@ public class AfterConfirmOrderService {
      *     更新【确认订单】表的订单状态=成功
      */
     @Transactional
-    public void afterConfirm(List<DailyTrainSeat> finalSeatList, DailyTrainTicket dailyTrainTicket){
-        for (DailyTrainSeat dailyTrainSeat : finalSeatList) {
+    public void afterConfirm(List<DailyTrainSeat> finalSeatList, DailyTrainTicket dailyTrainTicket, List<ConfirmOrderTicketRequest> tickets){
+        for (int j = 0; j < finalSeatList.size(); j++) {
+            DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
             DailyTrainSeat seatForUpdate = new DailyTrainSeat();
             seatForUpdate.setId(dailyTrainSeat.getId());
             seatForUpdate.setSell(dailyTrainSeat.getSell());
@@ -73,6 +82,24 @@ public class AfterConfirmOrderService {
                     minEndIndex,
                     maxEndIndex);
             log.info("真实扣减库存，更新【余票信息】表的对应余票字段值 - 完成");
+
+            // 调用会员服务接口，为会员增加车票购买记录
+            TicketRequest userTicketRequest = new TicketRequest();
+            userTicketRequest.setUserId(UserContext.get());
+            userTicketRequest.setPassengerId(tickets.get(j).getPassengerId());
+            userTicketRequest.setPassengerName(tickets.get(j).getPassengerName());
+            userTicketRequest.setTrainDate(dailyTrainTicket.getDate());
+            userTicketRequest.setTrainCode(dailyTrainTicket.getTrainCode());
+            userTicketRequest.setCarriageIndex(dailyTrainSeat.getCarriageIndex());
+            userTicketRequest.setSeatRow(dailyTrainSeat.getRow());
+            userTicketRequest.setSeatCol(dailyTrainSeat.getCol());
+            userTicketRequest.setStartStation(dailyTrainTicket.getStart());
+            userTicketRequest.setStartTime(dailyTrainTicket.getStartTime());
+            userTicketRequest.setEndStation(dailyTrainTicket.getEnd());
+            userTicketRequest.setEndTime(dailyTrainTicket.getEndTime());
+            userTicketRequest.setSeatType(dailyTrainSeat.getSeatType());
+            R<Boolean> responseFromUserModule = userFeign.saveByFeign(userTicketRequest);
+            log.info("跨服务调用 user 模块 saveByFeign 接口，返回={} - 完成", responseFromUserModule);
         }
     }
 }
