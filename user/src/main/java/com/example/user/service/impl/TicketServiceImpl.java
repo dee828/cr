@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.user.entity.Ticket;
 import com.example.user.mapper.TicketMapper;
 import com.example.user.request.TicketListRequest;
-import com.example.user.request.TicketRequest;
+import com.example.common.request.TicketRequest;
 import com.example.common.response.PageResponse;
 import com.example.user.response.TicketResponse;
 import com.example.user.service.TicketService;

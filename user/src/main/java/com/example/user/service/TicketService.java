@@ -5,7 +5,7 @@ import com.example.user.entity.Ticket;
 import com.example.user.request.TicketListRequest;
 import com.example.common.response.PageResponse;
 import com.example.user.response.TicketResponse;
-import com.example.user.request.TicketRequest;
+import com.example.common.request.TicketRequest;
 
 import java.util.List;
 

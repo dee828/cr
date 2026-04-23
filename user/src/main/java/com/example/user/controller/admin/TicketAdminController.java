@@ -2,7 +2,7 @@ package com.example.user.controller.admin;
 
 import com.example.common.response.R;
 import com.example.user.request.TicketListRequest;
-import com.example.user.request.TicketRequest;
+import com.example.common.request.TicketRequest;
 import com.example.common.response.PageResponse;
 import com.example.user.response.TicketResponse;
 import com.example.user.service.TicketService;
