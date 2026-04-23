@@ -51,6 +51,16 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, Ticket> impleme
 
     @Override
     @Transactional
+    public boolean save(TicketRequest request) {
+        Ticket ticket = BeanUtil.copyProperties(request, Ticket.class);
+        // 强制绑定当前用户
+        ticket.setUserId(UserContext.get());
+
+        return this.save(ticket);
+    }
+
+    @Override
+    @Transactional
     public boolean deleteTicket(Long id) {
         Ticket ticket = findTicket(id);
 

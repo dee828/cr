@@ -17,6 +17,12 @@ public interface TicketService extends IService<Ticket> {
     boolean saveOrUpdate(TicketRequest request);
 
     /**
+     * 保存车票记录（购票成功之后自动插入的）
+     * 会强制关联当前登录用户
+     */
+    boolean save(TicketRequest request);
+
+    /**
      * 删除车票记录
      * 包含所有权检查
      */
