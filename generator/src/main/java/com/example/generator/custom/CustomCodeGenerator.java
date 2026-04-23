@@ -16,7 +16,7 @@ public class CustomCodeGenerator {
     static String frontendType = "frontend-admin";
     static String apiJsPath = frontendType + "/src/api/[module]/";
     static String vuePath = frontendType + "/src/views/[module]/";
-    static boolean readOnly = false;
+    static boolean readOnly = true;
 
     public static void main(String[] args) throws Exception {
         String module = "user";
