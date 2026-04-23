@@ -285,6 +285,7 @@ const submitOrder = async (confirmDate) => {
       // 清除store中的数据
       ticketStore.clearTicketInfo()
       ElMessage.success('订单提交成功！')
+      await router.push({path: 'ticket'})
     } else {
       // 场景：http 返回头的状态码是 200，但是返回体中的 code 字段值不是 200
       ElMessage.error(res.msg || '订单提交失败')
