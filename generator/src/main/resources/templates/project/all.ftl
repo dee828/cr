@@ -8,7 +8,6 @@
     {"templateName": "flyway.conf.example", "targetPath": "${module}", "targetSuffix": ""},
     {"templateName": "flyway.conf", "targetPath": "${module}", "targetSuffix": ""},
     {"templateName": "HelloController", "targetPath": "${module}/src/main/java/${groupId}/${module}/controller", "targetSuffix": ".java"},
-    {"templateName": "HelloControllerTest", "targetPath": "${module}/src/test/java/${groupId}/${module}/controller", "targetSuffix": ".java"},
     {"templateName": "MybatisPlusConfig", "targetPath": "${module}/src/main/java/${groupId}/${module}/config", "targetSuffix": ".java"},
     {"templateName": "MyBatisPlusHandler", "targetPath": "${module}/src/main/java/${groupId}/${module}/config", "targetSuffix": ".java"},
     {"templateName": "OpenAPIConfig", "targetPath": "${module}/src/main/java/${groupId}/${module}/config", "targetSuffix": ".java"},
