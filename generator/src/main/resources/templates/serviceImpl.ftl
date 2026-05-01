@@ -47,12 +47,12 @@ public class ${Domain}ServiceImpl extends ServiceImpl<${Domain}Mapper, ${Domain}
             // 更新逻辑
             ${domain} = find${Domain}(request.getId());
 <#if hasUserId>
-            // 校验所有权
-            if (!request.getUserId().equals(currentUserId)) {
+            // 校验所有权：检查数据库中该资源的归属是否为当前登录用户
+            if (${domain}.getUserId() == null || !${domain}.getUserId().equals(currentUserId)) {
                 throw new CustomForbiddenException("无权操作此${tableNameCn!}信息");
             }
 </#if>
-            BeanUtil.copyProperties(request, ${domain});
+            BeanUtil.copyProperties(request, ${domain}, "userId");
         } else {
             // 新增逻辑
             ${domain} = BeanUtil.copyProperties(request, ${Domain}.class);
@@ -72,7 +72,7 @@ public class ${Domain}ServiceImpl extends ServiceImpl<${Domain}Mapper, ${Domain}
 
 <#if hasUserId>
         // 安全校验：只能删除自己的${tableNameCn!}
-        if (!${domain}.getUserId().equals(UserContext.get())) {
+        if (${domain}.getUserId() == null || !${domain}.getUserId().equals(UserContext.get())) {
             throw new CustomForbiddenException("无权删除此${tableNameCn!}信息");
         }
 
