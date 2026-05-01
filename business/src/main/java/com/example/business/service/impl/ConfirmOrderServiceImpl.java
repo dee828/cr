@@ -72,11 +72,11 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         if (request.getId() != null) {
             // 更新逻辑
             confirmOrder = findConfirmOrder(request.getId());
-            // 校验所有权
-            if (!request.getUserId().equals(currentUserId)) {
+            // 校验所有权：检查数据库中该资源的归属是否为当前登录用户
+            if (confirmOrder.getUserId() == null || !confirmOrder.getUserId().equals(currentUserId)) {
                 throw new CustomForbiddenException("无权操作此确认订单信息");
             }
-            BeanUtil.copyProperties(request, confirmOrder);
+            BeanUtil.copyProperties(request, confirmOrder, "userId");
         } else {
             // 新增逻辑
             confirmOrder = BeanUtil.copyProperties(request, ConfirmOrder.class);
@@ -93,7 +93,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
         ConfirmOrder confirmOrder = findConfirmOrder(id);
 
         // 安全校验：只能删除自己的确认订单
-        if (!confirmOrder.getUserId().equals(UserContext.get())) {
+        if (confirmOrder.getUserId() == null || !confirmOrder.getUserId().equals(UserContext.get())) {
             throw new CustomForbiddenException("无权删除此确认订单信息");
         }
 

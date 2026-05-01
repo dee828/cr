@@ -34,11 +34,11 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
         if (request.getId() != null) {
             // 更新逻辑
             passenger = findPassenger(request.getId());
-            // 校验所有权
-            if (!request.getUserId().equals(currentUserId)) {
+            // 校验所有权：检查数据库中该资源的归属是否为当前登录用户
+            if (passenger.getUserId() == null || !passenger.getUserId().equals(currentUserId)) {
                 throw new CustomForbiddenException("无权操作此乘车人/乘客信息");
             }
-            BeanUtil.copyProperties(request, passenger);
+            BeanUtil.copyProperties(request, passenger, "userId");
         } else {
             // 新增逻辑
             passenger = BeanUtil.copyProperties(request, Passenger.class);
@@ -55,7 +55,7 @@ public class PassengerServiceImpl extends ServiceImpl<PassengerMapper, Passenger
         Passenger passenger = findPassenger(id);
 
         // 安全校验：只能删除自己的乘车人/乘客
-        if (!passenger.getUserId().equals(UserContext.get())) {
+        if (passenger.getUserId() == null || !passenger.getUserId().equals(UserContext.get())) {
             throw new CustomForbiddenException("无权删除此乘车人/乘客信息");
         }
 

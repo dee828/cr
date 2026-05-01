@@ -34,11 +34,11 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, Ticket> impleme
         if (request.getId() != null) {
             // 更新逻辑
             ticket = findTicket(request.getId());
-            // 校验所有权
-            if (!request.getUserId().equals(currentUserId)) {
+            // 校验所有权：检查数据库中该资源的归属是否为当前登录用户
+            if (ticket.getUserId() == null || !ticket.getUserId().equals(currentUserId)) {
                 throw new CustomForbiddenException("无权操作此车票记录信息");
             }
-            BeanUtil.copyProperties(request, ticket);
+            BeanUtil.copyProperties(request, ticket, "userId");
         } else {
             // 新增逻辑
             ticket = BeanUtil.copyProperties(request, Ticket.class);
@@ -65,7 +65,7 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, Ticket> impleme
         Ticket ticket = findTicket(id);
 
         // 安全校验：只能删除自己的车票记录
-        if (!ticket.getUserId().equals(UserContext.get())) {
+        if (ticket.getUserId() == null || !ticket.getUserId().equals(UserContext.get())) {
             throw new CustomForbiddenException("无权删除此车票记录信息");
         }
 
