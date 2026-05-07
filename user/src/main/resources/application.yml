@@ -1,4 +1,7 @@
 spring:
+  application:
+    name: user
+
   datasource:
     url: jdbc:mysql://localhost:3306/xxx?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
