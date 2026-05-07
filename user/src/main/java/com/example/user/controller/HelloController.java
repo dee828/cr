@@ -1,10 +1,14 @@
 package com.example.user.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
+    @Value("${custom.name}")
+    String customName;
+
     @GetMapping("/")
     public String hello(){
         return "hello";
@@ -12,6 +16,6 @@ public class HelloController {
 
     @GetMapping("hi")
     public String hi(){
-        return "hi";
+        return "hi " + customName;
     }
 }
