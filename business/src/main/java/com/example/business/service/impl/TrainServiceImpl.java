@@ -207,6 +207,7 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
     }
 
     @Override
+    @Transactional
     public void testCache() {
         System.out.println("TrainService.testCache - 第一次");
         List<Train> trainList = this.list();
