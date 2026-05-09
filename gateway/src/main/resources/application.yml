@@ -37,13 +37,13 @@ spring:
             - Path=/business/**
           filters:
             - StripPrefix=1
-          uri: http://localhost:8081
+          uri: lb://business
         - id: scheduler
           predicates:
             - Path=/scheduler/**
           filters:
             - StripPrefix=1
-          uri: http://localhost:8082
+          uri: lb://scheduler
 
 auth:
   jwt:
