@@ -36,3 +36,7 @@ alibaba:
       access-key: your-access-key
       secret-key: your-secret-key
       bucket: your-bucket
+
+logging:
+  level:
+    org.springframework.cache: trace

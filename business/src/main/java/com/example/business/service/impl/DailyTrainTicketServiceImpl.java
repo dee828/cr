@@ -13,6 +13,7 @@ import com.example.business.request.DailyTrainTicketRequest;
 import com.example.common.response.PageResponse;
 import com.example.business.response.DailyTrainTicketResponse;
 import com.example.business.service.DailyTrainTicketService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -51,6 +52,7 @@ public class DailyTrainTicketServiceImpl extends ServiceImpl<DailyTrainTicketMap
     }
 
     @Override
+    @Cacheable("DailyTrainTicketService.list")
     public PageResponse<DailyTrainTicketResponse> getDailyTrainTicketPage(DailyTrainTicketListRequest request) {
         LambdaQueryWrapper<DailyTrainTicket> qw = buildQuery(request);
 
