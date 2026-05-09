@@ -205,4 +205,15 @@ public class TrainServiceImpl extends ServiceImpl<TrainMapper, Train> implements
             }
         }
     }
+
+    @Override
+    public void testCache() {
+        System.out.println("TrainService.testCache - 第一次");
+        List<Train> trainList = this.list();
+        // 模拟经过了很多复杂的业务 又需要查询同样的 sql
+        // ...
+        System.out.println("TrainService.testCache - 第二次");
+        trainList = this.list();
+        // 查看控制台的日志输出
+    }
 }

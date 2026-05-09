@@ -58,4 +58,6 @@ public interface TrainService extends IService<Train> {
      * @param trainCode 车次编号
      */
     public void genSeat(String trainCode);
+
+    public void testCache();
 }
