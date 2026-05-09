@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Setter
 @Getter
-public class Train extends BaseEntity {
+public class Train extends BaseEntity implements Serializable {
     /**
      * 车次编号
      */
