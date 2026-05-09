@@ -20,6 +20,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # [session or statement] 默认值是 session 即，默认开启一级缓存; 改成 statement 等于关闭一级缓存
+    #local-cache-scope: statement
 
 auth:
   jwt:
