@@ -8,6 +8,18 @@ spring:
     password: xxx
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: xxx
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600s
+      key-prefix: xxx
+
   servlet:
     multipart:
       max-file-size: 200MB

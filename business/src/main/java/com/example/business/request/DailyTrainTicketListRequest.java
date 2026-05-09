@@ -4,11 +4,13 @@ import com.example.common.request.PageRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @Getter
 @Setter
+@ToString(callSuper = true)
 public class DailyTrainTicketListRequest extends PageRequest {
     @Schema(description = "搜索关键词", example = "\"\"")
     private String keyword;

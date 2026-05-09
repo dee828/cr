@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class DailyTrainTicketResponse {
+public class DailyTrainTicketResponse implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
