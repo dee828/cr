@@ -52,7 +52,7 @@ public class DailyTrainTicketServiceImpl extends ServiceImpl<DailyTrainTicketMap
     }
 
     @Override
-    @Cacheable("DailyTrainTicketService.list")
+    //@Cacheable("DailyTrainTicketService.list")
     public PageResponse<DailyTrainTicketResponse> getDailyTrainTicketPage(DailyTrainTicketListRequest request) {
         LambdaQueryWrapper<DailyTrainTicket> qw = buildQuery(request);
 
