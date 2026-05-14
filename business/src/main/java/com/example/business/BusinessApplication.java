@@ -34,5 +34,9 @@ public class BusinessApplication {
 
         rules.add(rule);
         FlowRuleManager.loadRules(rules);
+
+        // 用 Jmeter 发送 10个/秒 购票请求
+        // 1. 看结果树：不跨秒的情况下只有一个请求是成功的，其他都会报错。如果这10个请求跨秒了，可能看到成功的请求会大于1个
+        // 2. 看控制台：能看到 FlowException 异常的日志输出
     }
 }
