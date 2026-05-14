@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.example.business.entity.DailyTrainCarriage;
 import com.example.business.entity.DailyTrainSeat;
 import com.example.business.entity.DailyTrainTicket;
@@ -208,6 +209,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 .orElseThrow(() -> new NoSuchElementException("确认订单不存在"));
     }
 
+    @SentinelResource("confirm")
     public void confirm(@Valid ConfirmOrderRequest request) {
         String lockKey = request.getDate() + "-" + request.getTrainCode();
         RLock lock = redissonClient.getLock("CONFIRM_ORDER_" + lockKey);
