@@ -32,6 +32,8 @@ import com.example.common.response.PageResponse;
 import com.example.business.response.ConfirmOrderResponse;
 import com.example.business.service.ConfirmOrderService;
 import jakarta.validation.Valid;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ import java.util.NoSuchElementException;
 
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, ConfirmOrder> implements ConfirmOrderService {
@@ -62,6 +65,9 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
 
     @Autowired
     AfterConfirmOrderService afterConfirmOrderService;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     @Transactional
@@ -202,8 +208,32 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 .orElseThrow(() -> new NoSuchElementException("确认订单不存在"));
     }
 
-    public synchronized void confirm(@Valid ConfirmOrderRequest request) {
-        System.out.println(request);
+    public void confirm(@Valid ConfirmOrderRequest request) {
+        String lockKey = request.getDate() + "-" + request.getTrainCode();
+        RLock lock = redissonClient.getLock("CONFIRM_ORDER_" + lockKey);
+        try {
+            // 尝试获取锁，最多等待 10 秒，如果超时则抛出异常
+            boolean tryLock = lock.tryLock(10, TimeUnit.SECONDS);
+            if (!tryLock) {
+                // 走到这里只是代表没抢到锁，并不知道车票被抢完了没，所以提示用户：系统繁忙，请稍候重试
+                throw new CustomBusinessException("系统繁忙，请稍后重试");
+            }
+            // 抢到锁了！处理核心逻辑
+            doConfirm(request);
+        } catch (InterruptedException e) {
+            // 获取锁被中断
+            // 跟上面类似，走到这里只是代表没抢到锁，并不知道车票被抢完了没，所以提示用户：系统繁忙，请稍候重试
+            throw new CustomBusinessException("系统繁忙，请稍后重试");
+        } finally {
+            // 只有当前线程持有锁时才能释放锁
+            if (lock !=null && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
+    }
+
+    public void doConfirm(@Valid ConfirmOrderRequest request) {
+        //System.out.println(request);
         // 额外的业务数据校验【暂略】如：车次是否存在；同乘客同车次的票是否已经买过了；等等...；当前先聚焦以下核心功能
 
         LocalDate date = request.getDate();
