@@ -7,6 +7,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.example.business.entity.DailyTrainCarriage;
 import com.example.business.entity.DailyTrainSeat;
 import com.example.business.entity.DailyTrainTicket;
@@ -209,7 +210,7 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 .orElseThrow(() -> new NoSuchElementException("确认订单不存在"));
     }
 
-    @SentinelResource("confirm")
+    @SentinelResource(value = "confirm", blockHandler = "confirmBlockHandler")
     public void confirm(@Valid ConfirmOrderRequest request) {
         String lockKey = request.getDate() + "-" + request.getTrainCode();
         RLock lock = redissonClient.getLock("CONFIRM_ORDER_" + lockKey);
@@ -493,5 +494,16 @@ public class ConfirmOrderServiceImpl extends ServiceImpl<ConfirmOrderMapper, Con
                 }
             }
         }
+    }
+
+    /**
+     * 限流对应的降级方法
+     * 该方法的参数和返回值必须跟被限流方法一致，参数最后多一个 BlockException 类型参数
+     * @param request 请求
+     * @param e BlockException 异常
+     */
+    public void confirmBlockHandler(ConfirmOrderRequest request, BlockException e) {
+        log.info("购票请求被限流了：{}", request);
+        throw new CustomBusinessException("当前购票人数过多，请稍后再试");
     }
 }
