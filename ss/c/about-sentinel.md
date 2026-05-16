@@ -59,5 +59,18 @@
 
 当调用链路中某个资源出现不稳定，例如，表现为 timeout，异常比例升高的时候，则对这个资源的调用进行限制，并让请求快速失败，避免影响到其它的资源，最终产生雪崩的效果。
 
-### Sentinel + Nacos
-- “规则”持久化到 Nacos
+### Sentinel 控制台
+https://sentinelguard.io/zh-cn/docs/dashboard.html
+
+- 下载控制台
+  - 以 sentinel-dashboard-1.8.9.jar 版本为例
+- 启动控制台
+  ```shell
+  java -Dserver.port=18179 -Dcsp.sentinel.dashboard.server=localhost:18179 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard-1.8.9.jar
+  ```
+- 代码端接入控制台
+  ```properties
+  spring.cloud.sentinel.transport.port=8179
+  spring.cloud.sentinel.transport.dashboard=localhost:18179
+  ```
+
