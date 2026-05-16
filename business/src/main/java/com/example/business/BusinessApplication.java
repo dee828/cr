@@ -21,7 +21,7 @@ import java.util.List;
 public class BusinessApplication {
     public static void main(String[] args) {
         SpringApplication.run(BusinessApplication.class, args);
-        initFlowRules();
+        //initFlowRules();
     }
 
     private static void initFlowRules(){
