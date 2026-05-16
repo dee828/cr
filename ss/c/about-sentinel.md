@@ -74,3 +74,5 @@ https://sentinelguard.io/zh-cn/docs/dashboard.html
   spring.cloud.sentinel.transport.dashboard=localhost:18179
   ```
 
+### Sentinel + Nacos
+- “规则”持久化到 Nacos
