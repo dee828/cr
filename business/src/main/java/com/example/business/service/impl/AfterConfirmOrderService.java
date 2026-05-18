@@ -12,6 +12,8 @@ import com.example.business.request.ConfirmOrderTicketRequest;
 import com.example.common.core.UserContext;
 import com.example.common.request.TicketRequest;
 import com.example.common.response.R;
+import io.seata.core.context.RootContext;
+import io.seata.spring.annotation.GlobalTransactional;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +46,10 @@ public class AfterConfirmOrderService {
      *     保存到【车票记录】表（这一步是跨模块+跨数据库操作。传统的数据库事务，无法保证两个不同数据库之间的事务一致性 ==> 引出分布式事务）
      *     更新【确认订单】表的订单状态=成功
      */
-    @Transactional
+    //@Transactional
+    @GlobalTransactional
     public void afterConfirm(List<DailyTrainSeat> finalSeatList, DailyTrainTicket dailyTrainTicket, List<ConfirmOrderTicketRequest> tickets, ConfirmOrder confirmOrder){
+        log.info("Seata 全局事务 ID={}", RootContext.getXID());
         for (int j = 0; j < finalSeatList.size(); j++) {
             DailyTrainSeat dailyTrainSeat = finalSeatList.get(j);
             DailyTrainSeat seatForUpdate = new DailyTrainSeat();

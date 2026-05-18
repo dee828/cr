@@ -14,6 +14,7 @@ import com.example.common.request.TicketRequest;
 import com.example.common.response.PageResponse;
 import com.example.user.response.TicketResponse;
 import com.example.user.service.TicketService;
+import io.seata.core.context.RootContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -52,6 +53,7 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, Ticket> impleme
     @Override
     @Transactional
     public boolean save(TicketRequest request) {
+        System.out.println("Seata 全局事务 ID=" + RootContext.getXID() + " - TicketService@save");
         Ticket ticket = BeanUtil.copyProperties(request, Ticket.class);
         // 强制绑定当前用户
         ticket.setUserId(UserContext.get());
