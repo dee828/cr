@@ -41,7 +41,7 @@ public class AfterConfirmOrderService {
      * 选中座位后的事务处理：
      *     更新座位表的新售卖情况 sell 字段值
      *     真实扣减库存，更新【余票信息】表的对应余票字段值
-     *     保存到【车票记录】表
+     *     保存到【车票记录】表（这一步是跨模块+跨数据库操作。传统的数据库事务，无法保证两个不同数据库之间的事务一致性 ==> 引出分布式事务）
      *     更新【确认订单】表的订单状态=成功
      */
     @Transactional
@@ -113,6 +113,9 @@ public class AfterConfirmOrderService {
             confirmOrderForUpdate.setStatus(ConfirmOrderStatus.SUCCESS.getCode());
             confirmOrderMapper.updateById(confirmOrderForUpdate);
             log.info("更新【确认订单】表的订单状态=成功 - 完成");
+
+            // 模拟调用方出现异常
+            int xxx = 1 / 0;
         }
     }
 }
