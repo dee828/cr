@@ -119,7 +119,7 @@ public class AfterConfirmOrderService {
             log.info("更新【确认订单】表的订单状态=成功 - 完成");
 
             // 模拟调用方出现异常
-            int xxx = 1 / 0;
+            //int xxx = 1 / 0;
         }
     }
 }
