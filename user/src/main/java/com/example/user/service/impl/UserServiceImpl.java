@@ -1,6 +1,7 @@
 package com.example.user.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,7 +35,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // todo：密码一定要加密
+        user.setPassword(BCrypt.hashpw(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
 
         return this.save(user);
@@ -95,8 +96,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         User user = new User();
         // 设置用户提交过来的数据
         user.setEmail(request.getEmail());
-        // todo 密码一定要加密
-        user.setPassword(request.getPassword());
+        user.setPassword(BCrypt.hashpw(request.getPassword()));
         user.setName(request.getName());
         user.setMobile(request.getMobile());
 
@@ -132,7 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         user.setMobile(request.getMobile());
 
         if(StringUtils.hasText(request.getPassword())){
-            user.setPassword(request.getPassword());
+            user.setPassword(BCrypt.hashpw(request.getPassword()));
         }
 
         user.setUpdatedAt(LocalDateTime.now());

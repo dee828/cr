@@ -1,5 +1,6 @@
 package com.example.user.service.impl;
 
+import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.jwt.JWT;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.common.exception.CustomUnauthorizedException;
@@ -35,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new CustomUnauthorizedException("邮箱或密码错误");
         }
 
-        if(!user.getPassword().equals(password)){
+        if(!BCrypt.checkpw(password, user.getPassword())){
             throw new CustomUnauthorizedException("邮箱或密码错误");
         }
 
