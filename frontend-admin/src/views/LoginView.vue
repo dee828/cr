@@ -4,8 +4,11 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import JSEncrypt from 'jsencrypt'
 
 import { login } from '@/api/auth'
+
+const PUBLIC_KEY = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDz4t8M7UTEDnbmj5rElZYFr0DZqw0LrITYlPVPhUfOjKXr0oIcZWEJQoFgF9S8XkzA8QGT/jDlp4Ck6bxkaZiaHSB4vFP71gBsbzH/WQwSn8kVs2w+PdXcpCkwbjJPs1gHV4A1y3l/vX2qxUGzZl8A5z0ddBdWsX155VzEZUHPXQIDAQAB'
 
 const formRef = ref()
 const router = useRouter()
@@ -41,8 +44,17 @@ const handleLogin = () => {
   formRef.value.validate()
   console.log('登录表单数据：', loginForm)
 
+  // 加密处理
+  const encryptor = new JSEncrypt()
+  encryptor.setPublicKey(PUBLIC_KEY)
+  const encryptedPassword = encryptor.encrypt(loginForm.password)
+  if (!encryptedPassword) {
+    ElMessage.error('加密异常')
+    return
+  }
+
   // 发送请求对接自己写的后端登录接口（AuthController 的 login 方法）
-  login(loginForm.email, loginForm.password)
+  login(loginForm.email, encryptedPassword)
     .then(res => {
       ElMessage.success('登录成功')
       router.push('/dashboard')
