@@ -256,9 +256,10 @@ const handleConfirm = async () => {
     }
   }
 
-  // 显示验证码对话框并获取验证码
-  captchaDialogVisible.value = true
-  await getCaptchaImage()
+  // 生成前端验证码
+  generateFrontCaptcha()
+  // 显示前端验证码对话框
+  frontCaptchaDialogVisible.value = true
 }
 
 // 验证码确认
@@ -376,6 +377,50 @@ const handleCaptchaCancel = () => {
   captchaKey.value = ''
   captchaDialogVisible.value = false
 }
+
+// 前端验证码相关
+const frontCaptcha = ref({
+  num1: 0,
+  num2: 0,
+  result: '',
+  answer: 0
+})
+
+// 生成前端验证码
+const generateFrontCaptcha = () => {
+  frontCaptcha.value.num1 = Math.floor(Math.random() * 50) + 1
+  frontCaptcha.value.num2 = Math.floor(Math.random() * 50) + 1
+  frontCaptcha.value.answer = frontCaptcha.value.num1 + frontCaptcha.value.num2
+  frontCaptcha.value.result = ''
+}
+
+// 前端验证码确认
+const handleFrontCaptchaConfirm = async () => {
+  if (!frontCaptcha.value.result) {
+    ElMessage.warning('请输入计算结果')
+    return
+  }
+
+  if (Number(frontCaptcha.value.result) !== frontCaptcha.value.answer) {
+    ElMessage.error('计算结果错误')
+    generateFrontCaptcha()
+    return
+  }
+
+  frontCaptchaDialogVisible.value = false
+  // 显示后端验证码对话框并获取验证码
+  captchaDialogVisible.value = true
+  await getCaptchaImage()
+}
+
+// 取消前端验证码对话框
+const handleFrontCaptchaCancel = () => {
+  frontCaptcha.value.result = ''
+  frontCaptchaDialogVisible.value = false
+}
+
+// 添加前端验证码对话框显示控制
+const frontCaptchaDialogVisible = ref(false)
 
 </script>
 
@@ -610,6 +655,40 @@ const handleCaptchaCancel = () => {
             type="primary"
             :loading="confirmLoading"
             @click="handleCaptchaConfirm"
+          >
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 前端验证码弹出层 -->
+    <el-dialog
+      v-model="frontCaptchaDialogVisible"
+      title="请完成验证"
+      width="400px"
+      :close-on-click-modal="false"
+    >
+      <div class="captcha-dialog-content">
+        <div class="front-captcha-container">
+          <div class="calculation">
+            {{ frontCaptcha.num1 }} + {{ frontCaptcha.num2 }} = ?
+          </div>
+          <el-input
+            v-model="frontCaptcha.result"
+            placeholder="请输入计算结果"
+            type="number"
+            style="width: 200px; margin-top: 15px;"
+          />
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="handleFrontCaptchaCancel">取消</el-button>
+          <el-button
+            type="primary"
+            @click="handleFrontCaptchaConfirm"
           >
             确认
           </el-button>
@@ -934,5 +1013,19 @@ const handleCaptchaCancel = () => {
 .no-captcha {
   color: #909399;
   font-size: 14px;
+}
+
+.front-captcha-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.calculation {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 15px;
 }
 </style>
