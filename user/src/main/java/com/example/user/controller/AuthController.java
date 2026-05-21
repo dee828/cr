@@ -2,6 +2,7 @@ package com.example.user.controller;
 
 import com.example.common.exception.CustomValidationException;
 import com.example.common.response.R;
+import com.example.user.config.CustomRsaComponent;
 import com.example.user.entity.User;
 import com.example.user.request.EmailVerificationCodeRequest;
 import com.example.user.request.LoginRequest;
@@ -34,6 +35,9 @@ public class AuthController {
 
     @Autowired
     AuthenticationService authenticationService;
+
+    @Autowired
+    CustomRsaComponent customRsaComponent;
 
     @PostMapping("register")
     @Operation(summary = "用户注册", description = "注册时需要通过邮箱接收验证码")
@@ -71,8 +75,9 @@ public class AuthController {
 
     @PostMapping("login")
     public R<LoginResponse> login(@RequestBody @Valid LoginRequest request){
+        String rawPassword = customRsaComponent.decrypt(request.getPassword());
 
-        User user = authenticationService.authenticate(request.getEmail(), request.getPassword());
+        User user = authenticationService.authenticate(request.getEmail(), rawPassword);
 
         String token = authenticationService.generateToken(user);
 
