@@ -256,6 +256,13 @@ const handleConfirm = async () => {
     }
   }
 
+  // 显示验证码对话框并获取验证码
+  captchaDialogVisible.value = true
+  await getCaptchaImage()
+}
+
+// 验证码确认
+const handleCaptchaConfirm = async () => {
   // 校验验证码
   if (!captchaCode.value) {
     ElMessage.warning('请输入验证码')
@@ -280,6 +287,7 @@ const handleConfirm = async () => {
   }
 
   confirmLoading.value = true
+  captchaDialogVisible.value = false
 
   const confirmData = {
     dailyTrainTicketId: ticketInfo.value.id,
@@ -330,6 +338,7 @@ const captchaImage = ref('')
 const captchaCode = ref('')
 const captchaKey = ref('')
 const captchaLoading = ref(false)
+const captchaDialogVisible = ref(false)
 
 // 获取验证码
 const getCaptchaImage = async () => {
@@ -360,6 +369,13 @@ watch(dialogVisible, (newVal) => {
     captchaCode.value = ''
   }
 })
+
+// 取消验证码对话框
+const handleCaptchaCancel = () => {
+  captchaCode.value = ''
+  captchaKey.value = ''
+  captchaDialogVisible.value = false
+}
 
 </script>
 
@@ -543,30 +559,6 @@ watch(dialogVisible, (newVal) => {
             </div>
           </div>
         </div>
-
-        <!-- 验证码部分 -->
-        <div class="info-section">
-          <h4>验证码</h4>
-          <div class="captcha-container">
-            <el-input
-              v-model="captchaCode"
-              placeholder="请输入验证码"
-              style="width: 200px"
-            />
-            <div class="captcha-image" v-loading="captchaLoading">
-              <img
-                v-if="captchaImage"
-                :src="captchaImage"
-                alt="验证码"
-                @click="getCaptchaImage"
-                style="cursor: pointer"
-              />
-              <div v-else class="no-captcha">
-                点击获取验证码
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <template #footer>
@@ -575,6 +567,49 @@ watch(dialogVisible, (newVal) => {
           <el-button
             type="primary"
             @click="handleConfirm"
+          >
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- 验证码弹出层 -->
+    <el-dialog
+      v-model="captchaDialogVisible"
+      title="请输入验证码"
+      width="400px"
+      :close-on-click-modal="false"
+    >
+      <div class="captcha-dialog-content">
+        <div class="captcha-container">
+          <el-input
+            v-model="captchaCode"
+            placeholder="请输入验证码"
+            style="width: 200px"
+          />
+          <div class="captcha-image" v-loading="captchaLoading">
+            <img
+              v-if="captchaImage"
+              :src="captchaImage"
+              alt="验证码"
+              @click="getCaptchaImage"
+              style="cursor: pointer"
+            />
+            <div v-else class="no-captcha">
+              点击获取验证码
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="handleCaptchaCancel">取消</el-button>
+          <el-button
+            type="primary"
+            :loading="confirmLoading"
+            @click="handleCaptchaConfirm"
           >
             确认
           </el-button>
