@@ -31,3 +31,11 @@ export function deleteDailyTrainTicket(id) {
 export function confirmOrder(data) {
   return http.post(MODULE_PREFIX + '/confirm-order/confirm', data)
 }
+
+export function getCaptcha() {
+  return http.get(MODULE_PREFIX + '/captcha/get')
+}
+
+export function checkCaptcha(data) {
+  return http.post(MODULE_PREFIX + '/captcha/check', data)
+}

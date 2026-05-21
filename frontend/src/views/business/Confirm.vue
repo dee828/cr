@@ -1,11 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useTicketStore } from '@/stores/ticket'
 import { router } from "@/router/index.js";
 import { listPassenger } from '@/api/user/passenger.js'
-import { confirmOrder } from '@/api/business/dailyTrainTicket.js'
+import { confirmOrder, getCaptcha, checkCaptcha } from '@/api/business/dailyTrainTicket.js'
 
 const ticketStore = useTicketStore()
 
@@ -231,6 +231,9 @@ const selectedSeats = ref([])  // 存储选中的座位，格式：['A1', 'C1']
 const handleCancel = () => {
   // 清空选座数据
   selectedSeats.value = []
+  // 清空验证码
+  captchaCode.value = ''
+  captchaKey.value = ''
   if (confirmInfo.value.seats) {
     // 重置所有座位的选中状态
     confirmInfo.value.seats.forEach(row => {
@@ -244,13 +247,36 @@ const handleCancel = () => {
 
 const confirmLoading = ref(false)
 // 确认订单
-const handleConfirm = () => {
+const handleConfirm = async () => {
   // 如果是选座模式，且已经选择了座位，则校验座位数量
   if (confirmInfo.value.chooseSeatType > 0 && selectedSeats.value.length > 0) {
     if (selectedSeats.value.length !== confirmInfo.value.passengers.length) {
       ElMessage.warning(`您已选择${selectedSeats.value.length}个座位，请继续选择或取消已选座位`)
       return
     }
+  }
+
+  // 校验验证码
+  if (!captchaCode.value) {
+    ElMessage.warning('请输入验证码')
+    return
+  }
+
+  try {
+    const checkRes = await checkCaptcha({
+      key: captchaKey.value,
+      imageCode: captchaCode.value
+    })
+    if (checkRes.code !== 200) {
+      ElMessage.error(checkRes.msg || '验证码错误')
+      // 刷新验证码
+      await getCaptchaImage()
+      return
+    }
+  } catch (error) {
+    console.error('验证码校验失败:', error)
+    ElMessage.error('验证码校验失败')
+    return
   }
 
   confirmLoading.value = true
@@ -298,6 +324,43 @@ const submitOrder = async (confirmDate) => {
     dialogVisible.value = false
   }
 }
+
+// 验证码相关
+const captchaImage = ref('')
+const captchaCode = ref('')
+const captchaKey = ref('')
+const captchaLoading = ref(false)
+
+// 获取验证码
+const getCaptchaImage = async () => {
+  captchaLoading.value = true
+  try {
+    const res = await getCaptcha()
+    if (res.code === 200) {
+      captchaKey.value = res.data.key
+      captchaImage.value = res.data.image
+    } else {
+      ElMessage.error(res.msg || '获取验证码失败')
+    }
+  } catch (error) {
+    console.error('获取验证码失败:', error)
+    ElMessage.error('获取验证码失败')
+  } finally {
+    captchaLoading.value = false
+  }
+}
+
+// 监听弹窗显示状态
+watch(dialogVisible, (newVal) => {
+  if (newVal) {
+    // 弹窗打开时获取验证码
+    getCaptchaImage()
+  } else {
+    // 弹窗关闭时清空验证码
+    captchaCode.value = ''
+  }
+})
+
 </script>
 
 <template>
@@ -477,6 +540,30 @@ const submitOrder = async (confirmDate) => {
               >
                 {{ seat }}
               </el-tag>
+            </div>
+          </div>
+        </div>
+
+        <!-- 验证码部分 -->
+        <div class="info-section">
+          <h4>验证码</h4>
+          <div class="captcha-container">
+            <el-input
+              v-model="captchaCode"
+              placeholder="请输入验证码"
+              style="width: 200px"
+            />
+            <div class="captcha-image" v-loading="captchaLoading">
+              <img
+                v-if="captchaImage"
+                :src="captchaImage"
+                alt="验证码"
+                @click="getCaptchaImage"
+                style="cursor: pointer"
+              />
+              <div v-else class="no-captcha">
+                点击获取验证码
+              </div>
             </div>
           </div>
         </div>
@@ -790,5 +877,27 @@ const submitOrder = async (confirmDate) => {
 
 .seat-tag {
   margin-right: 8px;
+}
+
+.captcha-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.captcha-image {
+  width: 100px;
+  height: 40px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.no-captcha {
+  color: #909399;
+  font-size: 14px;
 }
 </style>
