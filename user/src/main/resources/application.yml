@@ -41,3 +41,8 @@ auth:
 
 custom:
   private-key: xxx
+
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: testProducerGroup

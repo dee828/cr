@@ -17,6 +17,8 @@ import com.example.user.service.impl.DemoServiceTowImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +48,9 @@ public class AuthController {
 
     @Autowired
     DemoServiceTowImpl demoServiceTow;
+
+    @Autowired
+    RocketMQTemplate rocketMQTemplate;
 
     @PostMapping("register")
     @Operation(summary = "用户注册", description = "注册时需要通过邮箱接收验证码")
@@ -96,11 +101,8 @@ public class AuthController {
                 .build();
 
         // 登录成功之后：
-        // 短息通知
-        demoServiceOne.loginNotify(user);
-
-        // 积分发放
-        demoServiceTow.awardPoints(user);
+        SendResult sendResult = rocketMQTemplate.syncSend("demo-topic", user);
+        System.out.println(sendResult);
 
         return R.ok(response);
     }
