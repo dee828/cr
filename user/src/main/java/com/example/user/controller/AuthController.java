@@ -12,6 +12,8 @@ import com.example.user.service.AuthenticationService;
 import com.example.user.service.EmailService;
 import com.example.user.service.EmailVerificationService;
 import com.example.user.service.UserService;
+import com.example.user.service.impl.DemoServiceOneImpl;
+import com.example.user.service.impl.DemoServiceTowImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -38,6 +40,12 @@ public class AuthController {
 
     @Autowired
     CustomRsaComponent customRsaComponent;
+
+    @Autowired
+    DemoServiceOneImpl demoServiceOne;
+
+    @Autowired
+    DemoServiceTowImpl demoServiceTow;
 
     @PostMapping("register")
     @Operation(summary = "用户注册", description = "注册时需要通过邮箱接收验证码")
@@ -86,6 +94,13 @@ public class AuthController {
                 .email(request.getEmail())
                 .token(token)
                 .build();
+
+        // 登录成功之后：
+        // 短息通知
+        demoServiceOne.loginNotify(user);
+
+        // 积分发放
+        demoServiceTow.awardPoints(user);
 
         return R.ok(response);
     }
