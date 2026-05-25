@@ -8,7 +8,7 @@ import JSEncrypt from 'jsencrypt'
 
 import { login } from '@/api/auth'
 
-const PUBLIC_KEY = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDz4t8M7UTEDnbmj5rElZYFr0DZqw0LrITYlPVPhUfOjKXr0oIcZWEJQoFgF9S8XkzA8QGT/jDlp4Ck6bxkaZiaHSB4vFP71gBsbzH/WQwSn8kVs2w+PdXcpCkwbjJPs1gHV4A1y3l/vX2qxUGzZl8A5z0ddBdWsX155VzEZUHPXQIDAQAB'
+const PUBLIC_KEY = import.meta.env.VITE_PUBLIC_KEY
 
 const formRef = ref()
 const router = useRouter()
