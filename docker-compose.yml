@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - 16379:6379
+    volumes:
+      - ./docker/redis/data:/data
+    command: --requirepass 123456
+
+  nacos:
+    image: nacos/nacos-server:v2.5.2
+    container_name: nacos-standalone
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+    volumes:
+      - ./docker/nacos/standalone-logs/:/home/nacos/logs
+      - ./docker/nacos/standalone-data/:/home/nacos/data
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+
+  sentinel-dashboard:
+    image: bladex/sentinel-dashboard:1.8.9
+    container_name: sentinel-dashboard
+    ports:
+      - "18179:8858"
+    environment:
+      - TZ=Asia/Shanghai
+
+  seata-server:
+    image: apache/seata-server:2.2.0
+    hostname: seata-server
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    environment:
+      - SEATA_PORT=8091
+      - STORE_MODE=file
+
+  # rocketmq - namesrv
+  namesrv:
+    image: apache/rocketmq:5.3.0
+    container_name: rocketmq-namesrv
+    ports:
+      - 9876:9876
+    command: sh mqnamesrv
+    environment:
+      - JAVA_OPT_EXT=-Xms512m -Xmx2048m
+
+  # rocketmq - broker
+  broker:
+    image: apache/rocketmq:5.3.0
+    container_name: rocketmq-broker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+      - JAVA_OPT_EXT=-Xms512m -Xmx2048m
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./docker/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.0/conf/broker.conf
+      # 如果是 Linux 系统，需要将 logs 和 store 目录的所有者改为容器内的 rocketmq 用户 (UID 3000)
+      # 例 sudo chown -R 3000:3000 logs store
+      # 如果您使用的是 macOS 或 Windows 上的 Docker Desktop，则无需执行上述 chown 命令，Docker 会自动处理文件权限
+      # ***** 如果硬盘空间足够就打开下面两行注释 *****
+      #- ./docker/rocketmq/logs:/home/rocketmq/logs
+      #- ./docker/rocketmq/store:/home/rocketmq/store
+    depends_on:
+      - namesrv
+    command: sh mqbroker -n namesrv:9876 -c /home/rocketmq/rocketmq-5.3.0/conf/broker.conf
+
+  # rocketmq - dashboard
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:2.0.1
+    container_name: rocketmq-dashboard
+    ports:
+      - 8181:8080
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=namesrv:9876
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - namesrv
+      - broker
