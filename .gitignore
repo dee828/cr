@@ -36,5 +36,7 @@ build/
 logs
 .DS_Store
 
-docker
+docker/*
+!docker/rocketmq/broker.conf
+
 .env
