@@ -4,7 +4,7 @@ services:
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
-      - ./docker/redis/data:/data
+      - ./docker-volumes/redis/data:/data
     command: --requirepass ${REDIS_PASSWORD}
 
   nacos:
@@ -14,8 +14,8 @@ services:
       - PREFER_HOST_MODE=hostname
       - MODE=standalone
     volumes:
-      - ./docker/nacos/standalone-logs/:/home/nacos/logs
-      - ./docker/nacos/standalone-data/:/home/nacos/data
+      - ./docker-volumes/nacos/standalone-logs/:/home/nacos/logs
+      - ./docker-volumes/nacos/standalone-data/:/home/nacos/data
     ports:
       - "8848:8848"
       - "9848:9848"
@@ -62,13 +62,13 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./docker/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.0/conf/broker.conf
+      - ./docker-volumes/rocketmq/broker.conf:/home/rocketmq/rocketmq-5.3.0/conf/broker.conf
       # 如果是 Linux 系统，需要将 logs 和 store 目录的所有者改为容器内的 rocketmq 用户 (UID 3000)
       # 例 sudo chown -R 3000:3000 logs store
       # 如果是 macOS 或 Windows 上的 Docker Desktop，则无需执行上述 chown 命令，Docker 会自动处理文件权限
       # ***** 正常应该打开下面两行注释（这里临时注释是因为本地电脑的硬盘空间不足）*****
-      #- ./docker/rocketmq/logs:/home/rocketmq/logs
-      #- ./docker/rocketmq/store:/home/rocketmq/store
+      #- ./docker-volumes/rocketmq/logs:/home/rocketmq/logs
+      #- ./docker-volumes/rocketmq/store:/home/rocketmq/store
     depends_on:
       - namesrv
     command: sh mqbroker -n namesrv:9876 -c /home/rocketmq/rocketmq-5.3.0/conf/broker.conf
