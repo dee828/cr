@@ -1,3 +1,4 @@
+/*
 drop table if exists `station`;
 create table `station`
 (
@@ -121,3 +122,4 @@ create table `train_seat`
 
     primary key (`id`)
 ) comment ='车厢座位';
+*/
