@@ -23,3 +23,6 @@ mybatis-plus:
 auth:
   jwt:
     secret-key: "这是一串密钥,正常应该长一点，至少几十个字符，不能泄露，不能提交到代码仓库，在-dev配置文件覆盖这个值"
+
+custom:
+  business-feign-url: http://localhost:8081

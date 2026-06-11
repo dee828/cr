@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "user", url = "http://127.0.0.1:8080")
+@FeignClient(name = "user", url = "${custom.user-feign-url}")
 public interface UserFeign {
 
     @GetMapping("/ticket/saveByFeign")

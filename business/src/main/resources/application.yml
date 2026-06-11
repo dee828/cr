@@ -34,3 +34,6 @@ alibaba:
       access-key: your-access-key
       secret-key: your-secret-key
       bucket: your-bucket
+
+custom:
+  user-feign-url: http://localhost:8080
