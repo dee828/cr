@@ -35,3 +35,8 @@ build/
 ### Custom ###
 logs
 .DS_Store
+
+docker-volumes/*
+!docker-volumes/rocketmq/broker.conf
+
+.env
