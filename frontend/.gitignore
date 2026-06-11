@@ -42,3 +42,4 @@ __screenshots__/
 # Custom
 .env.local
 .env.prod
+.env.docker

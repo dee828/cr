@@ -1,0 +1,12 @@
+node_modules
+.vite
+
+dist
+
+.env.local
+.env.prod
+
+.vscode
+.DS_Store
+
+*.log

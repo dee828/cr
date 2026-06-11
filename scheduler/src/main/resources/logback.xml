@@ -93,7 +93,7 @@
     </appender>
 
     <!-- 开发环境 -->
-    <springProfile name="dev,dev_base">
+    <springProfile name="dev,dev_base,docker">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="ASYNC_FILE"/>
